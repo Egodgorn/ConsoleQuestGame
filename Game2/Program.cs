@@ -7,7 +7,7 @@ namespace Game2
     class Program
     {
         static MapLoader _maploader = new MapLoader();
-        static string[,] map = _maploader.LoadMap(@"C:\Users\Ego\source\repos\Quest Game\Game2\bin\Release\netcoreapp3.1\Map\Level_1.txt");
+        static string[,] map = _maploader.LoadMap(@"Map\Level_1.txt");
         
         
         //info player

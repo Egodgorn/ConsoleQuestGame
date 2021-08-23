@@ -7,13 +7,11 @@ namespace Game2
     class Program
     {
         static MapLoader _maploader = new MapLoader();
-        static string[,] map = _maploader.LoadMap(@"Map\Level_1.txt");
-        
-        
+        static string[,] map = _maploader.LoadMap(@"C:\Users\Ego\source\repos\Quest Game\Game2\Map\Level_1.txt");
+
         //info player
         public static int Health = 100;
         public static int Food = 100;
-        public static int HealthPotion = 0;
         public static int FoodRation = 0;
         //
 
@@ -22,15 +20,6 @@ namespace Game2
             Console.WriteLine(Health+ "Health");
             Console.SetCursorPosition(40, 1);
             Console.WriteLine(Food+ "Food");
-            Console.SetCursorPosition(40, 2);
-            Console.WriteLine(HealthPotion+ "HealthPotion");
-            Console.SetCursorPosition(40, 3);
-            Console.WriteLine(FoodRation+"FoodRation");
-            Console.SetCursorPosition(40, 4);
-            Console.WriteLine(Console.WindowHeight);
-            Console.SetCursorPosition(40, 5);
-            Console.WriteLine(Console.WindowWidth);
-
         }
 
         static void Draw(){
@@ -49,60 +38,38 @@ namespace Game2
             
         }
 
-        static  (int, int) FindHero() {
-            int rows = map.GetUpperBound(0) + 1;    //перебирает массив и ищет символ H
-            int columns = map.Length / rows;
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++)
-                    if (map[i, j] == "H")
-                        return (i, j);
-            }
-            throw new ArgumentException("ГГ не нашелся");
-        }
-
-        
-
-        static void Swap(ref string a, ref string b) => (a, b) = (b, a);//меняет местами значение
-
         static void Main(string[] args)
         {
+            InitItems init = new InitItems();//инициализация предметов инвентаря
+            Movement Move = new Movement();//инициализация системы движения
+            Inventory inventory = new Inventory();//инициализация инвенторя
+            
 
             Draw();
-
             UpInfo();
-
+            inventory.DrawInventory();
             do
             {
                 
                 switch (Console.ReadKey().Key)
                 {
-                    case ConsoleKey.LeftArrow: MoveDir(0,-1); break;
-                    case ConsoleKey.RightArrow: MoveDir(0,1); break;
-                    case ConsoleKey.UpArrow: MoveDir(-1,0); break;
-                    case ConsoleKey.DownArrow: MoveDir(1,0); break;
+                    case ConsoleKey.LeftArrow: Move.MoveDir(0,-1,ref map,ref inventory); break;
+                    case ConsoleKey.RightArrow: Move.MoveDir(0,1, ref map, ref inventory); break;
+                    case ConsoleKey.UpArrow: Move.MoveDir(-1,0, ref map, ref inventory); break;
+                    case ConsoleKey.DownArrow: Move.MoveDir(1,0, ref map, ref inventory); break;
+                    case ConsoleKey.Z: if (inventory.FindAndDestroyItem('H') == true) { Health += init.HealthPotion.Buff(); } break;
+
+
                 }
                 
                 Console.SetCursorPosition(0, 0);
                 
                 Draw();
                 UpInfo();
+                inventory.DrawInventory();
 
             } while(true);
             
-        }
-        private static void MoveDir(int x,int y)
-        {
-            var (r, c) = FindHero();
-            switch (map[r + x, c + y])
-            {
-                case " ":
-                    Swap(ref map[r, c], ref map[r + x, c + y]);
-                    break;
-                case "F":
-                    FoodRation++; Swap(ref map[r, c], ref map[r + x, c + y]);
-                    map[r - x, c - y] = " ";
-                    break;
-            }
         }
     }
 
